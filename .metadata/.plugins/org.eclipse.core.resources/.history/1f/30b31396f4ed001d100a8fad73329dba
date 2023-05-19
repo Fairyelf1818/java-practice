@@ -1,0 +1,108 @@
+package com.studyopedia;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class Login extends JFrame implements ActionListener {
+
+    private JLabel usernameLabel, passwordLabel;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JButton loginButton, signUpButton;
+    private Connection conn;
+
+    public Login() {
+        setTitle("Login");
+        setSize(400, 150);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Create labels
+        usernameLabel = new JLabel("Username:");
+        passwordLabel = new JLabel("Password:");
+
+        // Create text fields
+        usernameField = new JTextField(20);
+        passwordField = new JPasswordField(20);
+
+        // Create buttons
+        loginButton = new JButton("Login");
+        signUpButton = new JButton("Sign Up");
+
+        // Add action listeners to buttons
+        loginButton.addActionListener(this);
+        signUpButton.addActionListener(this);
+
+        // Create panels for components
+        JPanel usernamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        usernamePanel.add(usernameLabel);
+        usernamePanel.add(usernameField);
+
+        JPanel passwordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        passwordPanel.add(passwordLabel);
+        passwordPanel.add(passwordField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(loginButton);
+        buttonPanel.add(signUpButton);
+
+        // Add panels to main panel
+        JPanel mainPanel = new JPanel(new GridLayout(3, 1));
+        mainPanel.add(usernamePanel);
+        mainPanel.add(passwordPanel);
+        mainPanel.add(buttonPanel);
+
+        add(mainPanel);
+        setVisible(true);
+
+        // Connect to database
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost/Organization", "root", "password");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == loginButton) {
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
+
+            try {
+                // Prepare SQL statement to retrieve user with matching credentials
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE username = ? AND password = ?");
+                stmt.setString(1, username);
+                stmt.setString(2, password);
+
+                // Execute query and retrieve results
+                ResultSet rs = stmt.executeQuery();
+
+                // If user with matching credentials is found, perform login action
+                if (rs.next()) {
+                    System.out.println("Login successful");
+                } else {
+                    System.out.println("Login failed");
+                }
+
+                // Close statement and result set
+                rs.close();
+                stmt.close();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else if (e.getSource() == signUpButton) {
+            // Open sign up page
+            SignUp signUp = new SignUp();
+            signUp.setVisible(true);
+            dispose();
+        }
+    }
+
+    public static void main(String[] args) {
+        new Login();
+    }
+}
+

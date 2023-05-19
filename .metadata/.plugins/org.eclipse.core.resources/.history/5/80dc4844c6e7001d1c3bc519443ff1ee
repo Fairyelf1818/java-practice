@@ -1,0 +1,51 @@
+package com.studyopedia;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class HomePage extends JFrame {
+
+    private JButton signUpButton, loginButton;
+
+    public HomePage() {
+        setTitle("Home Page");
+        setSize(400, 200);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Create buttons
+        signUpButton = new JButton("Sign Up");
+        loginButton = new JButton("Login");
+
+        // Add action listener to sign up button
+        signUpButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new SignUp();
+            }
+        });
+
+        // Add action listener to login button
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                new Login();
+            }
+        });
+
+        // Create panel for buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(signUpButton);
+        buttonPanel.add(loginButton);
+
+        // Add panel to main panel
+        JPanel mainPanel = new JPanel(new GridLayout(1, 1));
+        mainPanel.add(buttonPanel);
+
+        add(mainPanel);
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        new HomePage();
+    }
+
+}

@@ -1,0 +1,19 @@
+package com.studyopedia;
+import java.util.Scanner;
+
+public class TwoNumbers {
+	
+	public static void main(String[] args) {
+		
+	Scanner ReadNumbers = new Scanner(System.in);
+	
+	System.out.println("The user should enter 2 numbers");
+	
+	System.out.println("Number 1: ");
+	int num1 = ReadNumbers.nextInt();
+	
+	
+	}
+	
+
+}

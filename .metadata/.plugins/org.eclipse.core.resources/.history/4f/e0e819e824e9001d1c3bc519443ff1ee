@@ -1,0 +1,68 @@
+package com.studyopedia;
+
+import java.sql.*;
+
+public class labplswork {
+    public static void main(String arg[])
+    {
+        Connection connection = null;
+        try {
+            // below two lines are used for connectivity.
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                "jdbc:mysql://LAPTOP-QMHL0DNI\\SQLEXPRESS/PARTS",
+                "PARTS", "");
+ 
+            // mydb is database
+            // mydbuser is name of database
+            // mydbuser is password of database
+ 
+            Statement statement;
+            statement = connection.createStatement();
+            ResultSet resultSet;
+            String query1 = "SELECT * FROM parts";
+            try (Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery(query1)) {
+                try {
+					while (rs.next()) {
+					    // Retrieve the data for each part
+					    int id = rs.getInt("id");
+					    String name = rs.getString("name");
+					    String manufacturer = rs.getString("manufacturer");
+					    int cost = rs.getInt("cost");
+					    int price = rs.getInt("price");
+					    
+					    // Print out the data for this part
+					    System.out.println("Part ID: " + id);
+					    System.out.println("Name: " + name);
+					    System.out.println("Manufacturer: " + manufacturer);
+					    System.out.println("Cost: $" + cost);
+					    System.out.println("Price: $" + price);
+					    System.out.println();
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            } catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            String query2 = "INSERT INTO parts (id, name, manufacturer, cost, price) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement pstmt = connection.prepareStatement(query2)) {
+                pstmt.setInt(1, 6);
+                pstmt.setString(2, "oil filter");
+                pstmt.setString(3, "Denso Corp");
+                pstmt.setInt(4, 500);
+                pstmt.setInt(5, 700);
+                int rowsInserted = pstmt.executeUpdate();
+                System.out.println(rowsInserted + " rows inserted.");
+        }
+        catch (Exception exception) {
+            System.out.println(exception);
+        }
+    } // function ends
+        finally {}
+}
+}
+

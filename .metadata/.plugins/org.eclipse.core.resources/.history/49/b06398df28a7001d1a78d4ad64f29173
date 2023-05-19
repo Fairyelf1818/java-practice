@@ -1,0 +1,9 @@
+package com.studyopedia;
+import java.util.*;
+
+public class TwoNumbers {
+	
+	Scanner ReadNumbers = new Scanner(System.in);
+	
+
+}

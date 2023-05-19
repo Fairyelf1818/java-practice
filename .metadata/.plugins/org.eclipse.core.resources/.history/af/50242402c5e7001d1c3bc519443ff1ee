@@ -1,0 +1,111 @@
+package com.studyopedia;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class SignUp extends JFrame implements ActionListener {
+
+    private JLabel firstNameLabel, lastNameLabel, usernameLabel, passwordLabel;
+    private JTextField firstNameField, lastNameField, usernameField;
+    private JPasswordField passwordField;
+    private JButton signUpButton;
+    private Connection conn;
+
+    public SignUp() {
+        setTitle("Sign Up");
+        setSize(400, 200);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        // Create labels
+        firstNameLabel = new JLabel("First Name:");
+        lastNameLabel = new JLabel("Last Name:");
+        usernameLabel = new JLabel("Username:");
+        passwordLabel = new JLabel("Password:");
+
+        // Create text fields
+        firstNameField = new JTextField(20);
+        lastNameField = new JTextField(20);
+        usernameField = new JTextField(20);
+        passwordField = new JPasswordField(20);
+
+        // Create button
+        signUpButton = new JButton("Sign Up");
+
+        // Add action listener to button
+        signUpButton.addActionListener(this);
+
+        // Create panels for components
+        JPanel namePanel = new JPanel(new GridLayout(2, 2));
+        namePanel.add(firstNameLabel);
+        namePanel.add(firstNameField);
+        namePanel.add(lastNameLabel);
+        namePanel.add(lastNameField);
+
+        JPanel usernamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        usernamePanel.add(usernameLabel);
+        usernamePanel.add(usernameField);
+
+        JPanel passwordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        passwordPanel.add(passwordLabel);
+        passwordPanel.add(passwordField);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(signUpButton);
+
+        // Add panels to main panel
+        JPanel mainPanel = new JPanel(new GridLayout(4, 1));
+        mainPanel.add(namePanel);
+        mainPanel.add(usernamePanel);
+        mainPanel.add(passwordPanel);
+        mainPanel.add(buttonPanel);
+
+        add(mainPanel);
+        setVisible(true);
+
+        // Connect to database
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "root", "password");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == signUpButton) {
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
+
+            try {
+                // Prepare SQL statement to insert new user into database
+                PreparedStatement stmt = conn.prepareStatement("INSERT INTO users (first_name, last_name, username, password, loyalty_points) VALUES (?, ?, ?, ?, 0)");
+                stmt.setString(1, firstName);
+                stmt.setString(2, lastName);
+                stmt.setString(3, username);
+                stmt.setString(4, password);
+
+                // Execute update statement
+                int rowsUpdated = stmt.executeUpdate();
+                System.out.println(rowsUpdated + " rows updated");
+
+                // Close statement
+                stmt.close();
+
+                // Close sign up page
+                dispose();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+}

@@ -1,0 +1,95 @@
+package com.studyopedia;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+public class Menu implements ActionListener {
+	private JFrame frame;
+    private JTextField textField;
+    private JButton[] buttons;
+    private String[] buttonLabels = {
+        "Login", "SignUp"
+    };
+    private double firstNumber = 0;
+    private String operation = "";
+    
+    public Menu () {
+    	frame = new JFrame("Menu");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 400);
+
+        textField = new JTextField();
+        textField.setPreferredSize(new Dimension(280, 40));
+        textField.setFont(new Font("Arial", Font.PLAIN, 100));
+        textField.setEditable(false);
+
+        JPanel panel = new JPanel(new GridLayout(1,1));
+        buttons = new JButton[buttonLabels.length];
+
+        for (int i = 0; i < buttonLabels.length; i++) {
+            buttons[i] = new JButton(buttonLabels[i]);
+            buttons[i].setFont(new Font("Arial", Font.PLAIN, 24));
+            buttons[i].addActionListener(this);
+            panel.add(buttons[i]);
+        }
+
+        frame.getContentPane().add(BorderLayout.NORTH, textField);
+        frame.getContentPane().add(BorderLayout.CENTER, panel);
+        frame.setVisible(true);
+    	
+    }
+    public void actionPerformed(ActionEvent e) {
+    	
+        String label = ((JButton)e.getSource()).getText();
+    	
+        
+        
+        if(label == "Login") {
+        	frame.setVisible(false); // Closes menu
+        	Signup(); // Opens Signup
+        }
+        else if (label == "SignUp") {}
+
+       
+    }
+    public void Signup() {
+    	String[] buttonLabels = {
+   	         "SignUphere"
+   	    };
+    	frame = new JFrame("Menu");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 400);
+
+        textField = new JTextField();
+        textField.setPreferredSize(new Dimension(280, 40));
+        textField.setFont(new Font("Arial", Font.PLAIN, 100));
+        textField.setEditable(false);
+
+        JPanel panel = new JPanel(new GridLayout(1,1));
+        buttons = new JButton[buttonLabels.length];
+
+        for (int i = 0; i < buttonLabels.length; i++) {
+            buttons[i] = new JButton(buttonLabels[i]);
+            buttons[i].setFont(new Font("Arial", Font.PLAIN, 24));
+            buttons[i].addActionListener(this);
+            panel.add(buttons[i]);
+        }
+
+        frame.getContentPane().add(BorderLayout.NORTH, textField);
+        frame.getContentPane().add(BorderLayout.CENTER, panel);
+        frame.setVisible(true);
+    }
+    
+    public static void main(String[] args) {
+        new Menu();
+    }
+}

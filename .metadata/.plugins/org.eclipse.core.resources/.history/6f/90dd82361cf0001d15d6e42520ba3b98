@@ -1,0 +1,230 @@
+package com.studyopedia;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class EmployeeDashboardGUI extends JFrame {
+
+    // Components for customer search and display panel
+    private JTextField searchField;
+    private JButton searchButton;
+    private JTable customerTable;
+
+
+    public EmployeeDashboardGUI() {
+        super("Employee Dashboard");
+
+        // Set up layout manager
+        setLayout(new BorderLayout());
+
+        // Create panels for each feature
+        JPanel searchPanel = createSearchPanel();
+        JPanel invoicePanel = createInvoicePanel();
+
+        // Add panels to main window
+        add(searchPanel, BorderLayout.NORTH);
+        add(invoicePanel, BorderLayout.CENTER);
+
+        // Set window properties
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(1000, 1000);
+        setVisible(true);
+    }
+
+    private JPanel createSearchPanel() {
+        // Set up panel with search field, search button, and customer table
+        JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createTitledBorder("Customer Search"));
+        panel.setLayout(new BorderLayout());
+    
+        searchField = new JTextField(40);
+        searchButton = new JButton("Search");
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchValue = searchField.getText();
+                DefaultTableModel model = (DefaultTableModel) customerTable.getModel();
+                
+                for (int i = model.getRowCount() - 1; i >= 0; i--) {
+                    String username = (String) model.getValueAt(i, 2);
+                    if (!username.equals(searchValue)) {
+                        model.removeRow(i);
+                    }
+                }
+            }
+        });
+        
+    
+        customerTable = new JTable(
+                new DefaultTableModel(new Object[] { "First Name", "Last Name", "Username", "Loyalty Points" }, 0));
+        JScrollPane scrollPane = new JScrollPane(customerTable);
+    
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+    
+        panel.add(searchPanel, BorderLayout.NORTH);
+    
+        panel.add(scrollPane, BorderLayout.CENTER);
+    
+        // Populate customer table with all customers from the database
+        DefaultTableModel model = (DefaultTableModel) customerTable.getModel();
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/organisation", "username", "password")) {
+            String query = "SELECT * FROM user";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            ResultSet rs = stmt.executeQuery();
+    
+            while (rs.next()) {
+                Object[] rowData = { rs.getString("fname"), rs.getString("lname"), rs.getString("uname"), rs.getInt("Lpbalance") };
+                model.addRow(rowData);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    
+        return panel;
+    }
+    
+// Declare a class-level variable to hold the database connection
+private Connection conn;
+
+public void yourMethod() {
+    try {
+        // Connect to the database and assign the connection to the class-level variable
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydatabase", "username", "password");
+
+
+        // Create the invoice panel using the connection
+        JPanel invoicePanel = createInvoicePanel();
+
+        // Add the customer and invoice panels to a JFrame
+        JFrame frame = new JFrame();
+        frame.setLayout(new GridLayout(2, 1));
+        frame.add(invoicePanel);
+        frame.pack();
+        frame.setVisible(true);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
+private JPanel createInvoicePanel() {
+    // Set up panel with text fields for entering invoice information
+    JPanel panel = new JPanel();
+    panel.setBorder(BorderFactory.createTitledBorder("Invoice Entry"));
+    panel.setLayout(new GridLayout(6, 7));
+
+    // Create text fields, labels, and button
+    JTextField dateField = new JTextField();
+    JTextField customerid = new JTextField();
+    JTextField totalField = new JTextField();
+    JTextField redeemedField = new JTextField();
+    JLabel dateLabel = new JLabel("Date: ");
+    JLabel invoiceNumberLabel = new JLabel("invoice number: ");
+    JLabel totalLabel = new JLabel("Total: ");
+    JLabel redeemedLabel = new JLabel("Redeemed: ");
+    JButton updateButton = new JButton("Update");
+    JButton generateReportButton = new JButton("Generate Report");
+
+        // Add an ActionListener to the button
+        generateReportButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Create the report popup
+                JFrame reportPopup = new JFrame("Report Popup");
+
+                // create a JTextArea to display the report information
+                JTextArea reportTextArea = new JTextArea();
+                reportTextArea.setEditable(false); // make the text area read-only
+
+                // add the report information to the text area
+                reportTextArea.setText("Loyalty Points Report:\n\n" +
+                        "Customer 1: 100 points\n" +
+                        "Customer 2: 50 points\n" +
+                        "Customer 3: 75 points\n");
+
+                // add the text area to a JScrollPane for scrolling
+                JScrollPane scrollPane = new JScrollPane(reportTextArea);
+
+                // ... add report GUI components to the popup ...
+                reportPopup.add(scrollPane);
+                reportPopup.setSize(400, 300);
+                reportPopup.setVisible(true);
+
+            }
+        });
+
+
+
+    // Add action listener to the update button
+    updateButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String date = dateField.getText();
+            String custid = customerid.getText();
+            String total = totalField.getText();
+            String redeemed = redeemedField.getText();
+
+            String URL ="jdbc:mysql://localhost:3306/Organization";
+            String uname="root";
+            String pssword=""; 
+            // Create SQL update statement with placeholders for parameters
+            try {
+            	Class.forName("com.mysql.cj.jdbc.Driver");
+            	//String connectionUrl = "jdbc:sqlserver://LAPTOP-QMHL0DNI;databaseName=Organization;trustServerCertificate=true;";
+                Connection conn = DriverManager.getConnection(URL,uname,pssword);
+                // Prepare the statement using the database connection
+                PreparedStatement pstmnt = conn.prepareStatement("UPDATE invoice SET invoicedate = ?, custid = ?, total = ?, redeemed = ? WHERE invoiceid = ?");
+                pstmnt.setString(1, date);
+                pstmnt.setString(2, custid);
+                pstmnt.setString(3, total);
+                pstmnt.setString(4, redeemed);
+              
+                // Execute the update statement and show a message dialog with the result
+                int rowsUpdated = pstmnt.executeUpdate();
+                if (rowsUpdated > 0) {
+
+                    JOptionPane.showMessageDialog(null, "Update successful!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Update failed!");
+                }
+                
+            } catch (SQLException | ClassNotFoundException ex) {
+                JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+                System.out.println(ex.getMessage());
+            }
+        }
+    });
+
+    // Add components to the panel
+    panel.add(dateLabel);
+    panel.add(dateField);
+    panel.add(invoiceNumberLabel);
+    panel.add(customerid);
+    panel.add(totalLabel);
+    panel.add(totalField);
+    panel.add(redeemedLabel);
+    panel.add(redeemedField);
+    panel.add(updateButton);
+    panel.add(generateReportButton);
+
+    return panel;
+}
+
+
+    public static void main(String[] args) {
+        EmployeeDashboardGUI dashboard = new EmployeeDashboardGUI();
+
+    }
+
+}

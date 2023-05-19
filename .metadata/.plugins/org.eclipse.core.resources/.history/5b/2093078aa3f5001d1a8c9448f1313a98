@@ -1,0 +1,16 @@
+package com.studyopedia;
+
+import javax.swing.JFrame;
+
+public class GUI {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		JFrame frame = new JFrame(); // Creates instance of a frame
+		frame.setSize(420,420); // width,height
+		frame.setVisible(true);// Makes it visible
+		
+
+	}
+
+}

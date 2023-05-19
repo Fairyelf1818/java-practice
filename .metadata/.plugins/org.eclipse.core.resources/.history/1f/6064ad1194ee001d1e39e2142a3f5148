@@ -1,0 +1,106 @@
+package com.studyopedia;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class Login extends JFrame {
+
+    private JLabel usernameLabel, passwordLabel;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JButton loginButton,signupButton;
+
+    public Login() {
+        setTitle("Login");
+        setSize(400, 200);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        // Create labels and fields
+        usernameLabel = new JLabel("Username:");
+        passwordLabel = new JLabel("Password:");
+        usernameField = new JTextField(20);
+        passwordField = new JPasswordField(20);
+
+        // Create login button
+        loginButton = new JButton("Login");
+        signupButton = new JButton("Sign Up");
+
+        // Add action listener to login button
+        loginButton.addActionListener(new ActionListener() { // Directs to login page
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+                
+                String serverName = "LAPTOP-QMHL0DNI\\SQLEXPRESS";
+                String databaseName = "Organization";
+
+                String connectionUrl = "jdbc:sqlserver://" + serverName + ";databaseName=" + databaseName + ";portNumber=1433;";
+                //String connectionUrl ="jdbc:sqlserver://"+serverName+";instanceName=SQLEXPRESS;DatabaseName=Organization;";
+                //integratedSecurity=true
+
+                try {
+                    Connection conn = DriverManager.getConnection(connectionUrl);
+                    PreparedStatement pstmt = conn.prepareStatement("SELECT user_type FROM users WHERE username = ? AND password = ?");
+                    pstmt.setString(1, username);
+                    pstmt.setString(2, password);
+                    ResultSet rs = pstmt.executeQuery();
+
+                    if (rs.next()) {
+                        String userType = rs.getString("user_type");
+                        if (userType.equals("customer")) {
+                            new CustomerDashboard();
+                        } else if (userType.equals("employee")) {
+                            new EmployeeDashboardGUI();
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Invalid user type");
+                        }
+                        dispose(); // Close login window
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid username or password");
+                    }
+
+                    rs.close();
+                    pstmt.close();
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+                    System.out.println(ex.getMessage());
+                }
+            }
+        });
+        
+        signupButton.addActionListener(new ActionListener() { // DIrects to SIgnup Page Chi
+        	public void actionPerformed(ActionEvent e) {
+        		new SignUp();
+        		dispose();
+        		
+        	}
+        });
+
+        // Create panel for labels and fields
+        JPanel fieldPanel = new JPanel(new GridLayout(2, 2));
+        fieldPanel.add(usernameLabel);
+        fieldPanel.add(usernameField);
+        fieldPanel.add(passwordLabel);
+        fieldPanel.add(passwordField);
+
+        // Create panel for button
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(loginButton);
+        buttonPanel.add(signupButton);
+
+        // Add panels to main panel
+        JPanel mainPanel = new JPanel(new GridLayout(2, 1));
+        mainPanel.add(fieldPanel);
+        mainPanel.add(buttonPanel);
+
+        add(mainPanel);
+        setVisible(true);
+    }
+    public static void main(String[] args) {
+        new Login();
+    }
+
+}

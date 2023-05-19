@@ -1,0 +1,107 @@
+package com.studyopedia;
+
+import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+public class GUI {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		// Declaring stuff
+		JLabel  heading,idtxt,fnametxt,lnametxt,depttxt,hodtxt;
+		JButton insert,update,delete,search;
+		JTextField id,fname,lname,deptname,hodname;
+		
+		// Labels
+		heading = new JLabel("STUDENT RECORD");
+		heading.setBounds(140,50,1000,30); // Left, Top, Right, Bottom
+		
+		idtxt = new JLabel("ID Number");
+		idtxt.setBounds(20,120,1000,30);
+		
+		fnametxt = new JLabel("Firstname");
+		fnametxt.setBounds(20,160,1000,30);
+		
+		lnametxt = new JLabel("Lastname");
+		lnametxt.setBounds(20,200,1000,30);
+		
+		depttxt = new JLabel("Department");
+		depttxt.setBounds(20,240,1000,30);
+		
+		hodtxt = new JLabel("Head of Department"); // ASSIGNING VALUES TO EACH LABEL VARIABLE
+		hodtxt.setBounds(20,280,1000,30);
+		
+		// Buttons
+		insert = new JButton("Insert");
+		insert.setBounds(50,350,100,30);
+		
+		update = new JButton("Update");
+		update.setBounds(150,350,100,30);
+		
+		delete = new JButton("Delete");
+		delete.setBounds(250,350,100,30);
+		
+		search = new JButton("Search"); // ASSIGNMENT TEXT VALUES TO EACH BUTTON VARIABLE
+		search.setBounds(350,350,100,30);
+		
+		// TextFields
+		id = new JTextField();
+		id.setBounds(200,120,1000,30);
+		id.setSize(200,30);
+		
+		fname = new JTextField();
+		fname.setBounds(200,160,1000,30);
+		fname.setSize(200,30);
+		
+		lname = new JTextField();
+		lname.setBounds(200,200,1000,30);
+		lname.setSize(200,30);
+		
+		deptname = new JTextField();
+		deptname.setBounds(200,240,1000,30);
+		deptname.setSize(200,30);
+		
+		hodname = new JTextField();
+		hodname.setBounds(200,280,1000,30);
+		hodname.setSize(200,30);
+		
+		
+		JFrame frame = new JFrame(); // Creates instance of a frame
+		JPanel panel = new JPanel(); // Creates the instance of a panel
+		//panel.setBounds(200,200,200,200);
+		frame.setVisible(true);// Makes it visible
+		frame.add(heading);
+		frame.add(idtxt);
+		frame.add(fnametxt);
+		frame.add(lnametxt);
+		frame.add(depttxt);
+		frame.add(hodtxt);
+		
+		frame.add(id);
+		frame.add(fname);
+		frame.add(lname);
+		frame.add(deptname);
+		frame.add(hodname);
+		frame.add(insert);
+		frame.add(update);
+		frame.add(delete);
+		frame.add(search);
+		frame.add(panel);
+		
+		
+		frame.setTitle("Title Is Placed Here");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Allows the user to close the program instead of hiding it 
+		frame.setResizable(false); // Doesn`t allow the user to be able to resize the window
+		frame.setSize(600,600); // width,height || X and Y Dimension
+	
+		
+
+	}
+
+}

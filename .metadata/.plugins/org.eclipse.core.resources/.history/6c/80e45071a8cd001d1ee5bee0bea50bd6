@@ -1,0 +1,9 @@
+package com.studyopedia;
+
+import javax.swing.JOptionPane;
+
+public class Menu{
+	public static void main(String args[]) {
+		String heading = JOptionPane.showInputDialog("Menu - Press 1 to log in and 2 to sign up");
+	}
+}

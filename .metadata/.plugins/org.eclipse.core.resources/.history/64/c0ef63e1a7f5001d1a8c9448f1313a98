@@ -1,0 +1,46 @@
+package com.studyopedia;
+
+import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class GUI {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		// Declaring stuff
+		JLabel  idtxt,fnametxt,lnametxt,depttxt,hodtxt;
+		JButton insert,update,delete,search; 
+		
+		idtxt = new JLabel("ID Number");
+		fnametxt = new JLabel("Firstname");
+		lnametxt = new JLabel("Lastname");
+		depttxt = new JLabel("Department");
+		hodtxt = new JLabel("Head of Department"); // ASSIGNING VALUES TO EACH LABEL VARIABLE
+		
+		insert = new JButton("Insert");
+		update = new JButton("Update");
+		delete = new JButton("Delete");
+		search = new JButton("Search"); // ASSIGNMENT TEXT VALUES TO EACH BUTTON VARIABLE
+		
+		
+		
+		
+		JFrame frame = new JFrame(); // Creates instance of a frame
+		frame.setTitle("Title Is Placed Here");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Allows the user to close the program instead of hiding it 
+		frame.setResizable(false); // Doesn`t allow the user to be able to resize the window
+		frame.setSize(420,420); // width,height || X and Y Dimension
+		
+		
+		JPanel main = new JPanel(new GridLayout(2,2));
+		main.add(idtxt);
+		frame.setVisible(true);// Makes it visible
+
+	}
+
+}

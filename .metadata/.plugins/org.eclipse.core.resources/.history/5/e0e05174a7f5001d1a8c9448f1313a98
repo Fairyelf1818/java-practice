@@ -1,0 +1,19 @@
+package com.studyopedia;
+
+import javax.swing.JFrame;
+
+public class GUI {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		JFrame frame = new JFrame(); // Creates instance of a frame
+		frame.setTitle("Title Is Placed Here");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Allows the user to close the program instead of hiding it 
+		frame.setResizable(false); // Doesn`t allow the user to be able to resize the window
+		frame.setSize(420,420); // width,height || X and Y Dimension
+		frame.setVisible(true);// Makes it visible
+		
+
+	}
+
+}

@@ -1,0 +1,267 @@
+package com.studyopedia;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class CustomerDashboard extends JFrame {
+    private JLabel fnameLabel, lnamLabel, unamelabel, paymentLabel;
+    private JTextField fnameTextField, lnameTextField, unameTextField, paymentTextField;
+    private JButton redeemButton;
+    private JTable invoiceTable;
+    private JLabel pointsLabel;
+    private String username;
+
+    public CustomerDashboard(String username) {
+        super("Customer Dashboard");
+        this.username = username;
+        
+       
+        // Set up the GUI components
+        pointsLabel = new JLabel("Points balance: 0");
+        fnameLabel = new JLabel("First name:");
+        fnameTextField = new JTextField();
+        lnamLabel = new JLabel("Last name:");
+        lnameTextField = new JTextField();
+        unamelabel = new JLabel("Username:");
+        unameTextField = new JTextField();
+        redeemButton = new JButton("Redeem Points");
+        JButton employeeDashboardButton = new JButton("Access Employee Dashboard");
+        employeeDashboardButton.setPreferredSize(new Dimension(150, 30));
+        redeemButton.setPreferredSize(new Dimension(150, 30));
+        paymentLabel = new JLabel("Payment:");
+        paymentTextField = new JTextField();
+
+        String URL ="jdbc:mysql://localhost:3306/Organization";
+        String uname="root";
+        String pssword="";
+        // Retrieve customer information from the database
+        // Retrieve customer information from the database
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(URL, uname, pssword);
+            PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM user WHERE username = ?");
+            preparedStatement.setString(1, username); // Set the passed username
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                String retrievedUsername = resultSet.getString("username");
+                if (retrievedUsername.equals(username)) {
+                    // The retrieved username matches the passed username
+                    fnameTextField.setText(resultSet.getString("fname"));
+                    lnameTextField.setText(resultSet.getString("lname"));
+                    unameTextField.setText(retrievedUsername);
+                } else {
+                    // Handle case when the retrieved username does not match the passed username
+                    fnameTextField.setText("");
+                    lnameTextField.setText("");
+                    unameTextField.setText("");
+                }
+            } else {
+                // Handle case when no customer is found
+                fnameTextField.setText("");
+                lnameTextField.setText("");
+                unameTextField.setText("");
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+            conn.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(URL, uname, pssword);
+        
+            // Retrieve the ID value for the given username
+            String idQuery = "SELECT id FROM user WHERE username = ?";
+            PreparedStatement idStatement = conn.prepareStatement(idQuery);
+            idStatement.setString(1, username);
+            ResultSet idResult = idStatement.executeQuery();
+            int customerId = 0;
+            if (idResult.next()) {
+                customerId = idResult.getInt("id");
+            }
+            idResult.close();
+            idStatement.close();
+        
+            // Check if customerId matches the id in the invoice table
+            String invoiceQuery = "SELECT invoicedate, invoiceid, total FROM invoice WHERE id = ?";
+            PreparedStatement invoiceStatement = conn.prepareStatement(invoiceQuery);
+            invoiceStatement.setInt(1, customerId);
+            ResultSet invoiceResult = invoiceStatement.executeQuery();
+        
+            if (invoiceResult.next()) {
+                // customerId matches the id in the invoice table
+                // Retrieve the invoice information
+                String invoiceDate = invoiceResult.getString("invoicedate");
+                int invoiceId = invoiceResult.getInt("invoiceid");
+                double total = invoiceResult.getDouble("total");
+        
+                // Retrieve the loyalty points from the user table
+                String loyaltyPointsQuery = "SELECT lpbalance FROM user WHERE id = ?";
+                PreparedStatement loyaltyPointsStatement = conn.prepareStatement(loyaltyPointsQuery);
+                loyaltyPointsStatement.setInt(1, customerId);
+                ResultSet loyaltyPointsResult = loyaltyPointsStatement.executeQuery();
+        
+                int loyaltyPoints = 0;
+                if (loyaltyPointsResult.next()) {
+                    loyaltyPoints = loyaltyPointsResult.getInt("lpbalance");
+                }
+                loyaltyPointsResult.close();
+                loyaltyPointsStatement.close();
+        
+                // Create a DefaultTableModel to store the data for JTable
+                DefaultTableModel tableModel = new DefaultTableModel();
+                tableModel.addColumn("Invoice Date");
+                tableModel.addColumn("Invoice ID");
+                tableModel.addColumn("Total");
+                tableModel.addColumn("Loyalty Points");
+        
+                // Add the data to the table model
+                tableModel.addRow(new Object[]{invoiceDate, invoiceId, total, loyaltyPoints});
+        
+                // Create the JTable with the table model
+                JTable invoiceTable = new JTable(tableModel);
+        
+                // Add the JTable to a JScrollPane and display it
+                JScrollPane scrollPane = new JScrollPane(invoiceTable);
+                getContentPane().add(scrollPane, BorderLayout.CENTER);
+        
+            } else {
+                // customerId does not match any id in the invoice table
+                // Your code here for handling this condition
+            }
+        
+            invoiceResult.close();
+            invoiceStatement.close();
+            conn.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        
+        
+
+        // Add the components to the GUI
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 0));
+        buttonPanel.add(redeemButton);
+        buttonPanel.add(employeeDashboardButton);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        JPanel infoPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+        infoPanel.add(fnameLabel);
+        infoPanel.add(fnameTextField);
+        infoPanel.add(lnamLabel);
+        infoPanel.add(lnameTextField);
+        infoPanel.add(unamelabel);
+        infoPanel.add(unameTextField);
+        infoPanel.add(paymentLabel);
+        infoPanel.add(paymentTextField);
+
+        // Create a new JPanel for the JTable
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        JScrollPane scrollPane = new JScrollPane(invoiceTable);
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+
+        panel.add(infoPanel, BorderLayout.NORTH);
+        panel.add(pointsLabel, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        invoiceTable.setPreferredScrollableViewportSize(new Dimension(0, 250));
+        panel.add(new JScrollPane(invoiceTable));
+
+        add(panel);
+
+        // Set up the event listeners
+        redeemButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String input = JOptionPane.showInputDialog(null, "How many points would you like to redeem?",
+                        "Redeem Points", JOptionPane.PLAIN_MESSAGE);
+                double total = 0.0;
+                try {
+                	Class.forName("com.mysql.cj.jdbc.Driver");
+                	//String connectionUrl = "jdbc:sqlserver://LAPTOP-QMHL0DNI;databaseName=Organization;trustServerCertificate=true;";
+                    Connection conn = DriverManager.getConnection(URL,uname,pssword);
+                    PreparedStatement preparedStatement = conn
+                            .prepareStatement("SELECT SUM(total) AS total FROM invoice");
+                    ResultSet resultSet = preparedStatement.executeQuery();
+                    if (resultSet.next()) {
+                        total = resultSet.getDouble("total");
+                    }
+                    resultSet.close();
+                    preparedStatement.close();
+                    conn.close();
+                } catch (SQLException | ClassNotFoundException j) {
+                    j.printStackTrace();
+                }
+
+                try {
+                    int pointsToRedeem = Integer.parseInt(input);
+                    double redeemedAmount = total * 0.01;
+                    if (pointsToRedeem <= redeemedAmount) {
+                        JOptionPane.showMessageDialog(null, "Points redeemed successfully!", "Redeem Points",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Insufficient points to redeem!", "Redeem Points",
+                                JOptionPane.WARNING_MESSAGE);
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number.", "Invalid Input",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        employeeDashboardButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose(); // Dispose of the current CustomerDashboard
+                EmployeeDashboardGUI employeeDashboard = new EmployeeDashboardGUI();
+                employeeDashboard.setVisible(true);
+            }
+        });
+
+        // Set the window size and show the GUI
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+
+    }
+
+    public static void main(String[] args) {
+        String URL = "jdbc:mysql://localhost:3306/Organization";
+        String uname = "root";
+        String pssword = "";
+    
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(URL, uname, pssword);
+            PreparedStatement preparedStatement = conn.prepareStatement("SELECT username FROM user WHERE id = ?");
+            preparedStatement.setInt(1, 1); // Assuming the username is associated with a specific ID in the database
+    
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                String username = resultSet.getString("username");
+                CustomerDashboard customerDashboard = new CustomerDashboard();
+                // Additional code related to the CustomerDashboard class
+            }
+    
+            resultSet.close();
+            preparedStatement.close();
+            conn.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+    
+}

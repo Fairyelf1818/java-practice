@@ -1,0 +1,33 @@
+package com.copy2;
+
+import java.util.Scanner;
+
+public class ppaugust2015question1 {
+
+	public static void main(String[] args) {
+		try (// TODO Auto-generated method stub
+		Scanner word = new Scanner(System.in)) {
+			System.out.println(" This program will check if the inserted word is a palindrome");
+			System.out.println("Please enter a word");
+			String theword = word.nextLine();
+			String theReversedword = "";
+
+			for (int i = 0; i < theword.length(); i++) {
+				 char letter = theword.charAt(i);
+				theReversedword = theword + theReversedword;
+				}
+			
+			if (theword == theReversedword) {
+				System.out.println("This word is a palindrome");
+				System.out.println(theReversedword);
+			}else {
+				System.out.println("This word is definitely not a palindrome");
+			}
+		}
+		
+		
+			//System.out.println("Reversed string: "+ theReversedword);
+
+	}
+
+}
